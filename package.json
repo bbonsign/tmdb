@@ -1,0 +1,19 @@
+{
+  "name": "tmdb",
+  "version": "1.0.0",
+  "description": "Search movies using tmdb api",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+     "devstart": "nodemon ./server.js"
+  },
+  "author": "Brian Bonsignore",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
