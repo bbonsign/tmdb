@@ -2,12 +2,24 @@ const searchInput = document.querySelector("#search");
 const searchForm = document.querySelector("#search-form");
 const resultsContainer = document.querySelector("#results-container");
 
-searchForm.addEventListener("submit", async e => {
+window.onload = () => {
+  handleSearch();
+};
+
+searchForm.addEventListener("submit", e => {
   e.preventDefault();
+  handleSearch()
+});
+
+async function handleSearch() {
   const searchTerm = searchInput.value.trim();
   console.log(searchTerm);
-  if (searchTerm.length === 0) {return }
-  const response = await fetch(`/search?query=${searchTerm}&language=${navigator.language}`);
+  if (searchTerm.length === 0) {
+    return
+  }
+
+  const searchURL = `/search?query=${searchTerm}&language=${navigator.language}`
+  const response = await fetch(searchURL);
   const responseJson = await response.json();
   if (responseJson.total_results === 0) {
     noResultMessage(sanitized(searchTerm));
@@ -16,9 +28,11 @@ searchForm.addEventListener("submit", async e => {
     console.log(responseJson);
     const resultsArr = await responseJson.results;
     console.log(await resultsArr);
-    resultsList(await resultsArr);
+    resultsList(resultsArr);
+    localStorage.clear();
+    localStorage.setItem('searchTerm', searchTerm)
   }
-});
+}
 
 function sanitized(str) {
   const temp = document.createElement('div');
@@ -47,7 +61,7 @@ function resultCard(moveObj) {
     id,
     title,
     overview,
-    release_date: releaseDate,
+    release_date: releaseDate = '',
     poster_path: posterPath} = moveObj;
 
   const titleElement = linkWrapper(id, title, cardTitle(title));
@@ -76,13 +90,19 @@ function cardTitle(title) {
 }
 
 function cardDate(releaseDate) {
-  //releaseDate comes from the API in YYYY-MM-DD format
-  const date = new Date(releaseDate);
-  var options = {year: 'numeric', month: 'long', day: 'numeric'};
-  const formatter = new Intl.DateTimeFormat('default', options);
+  //releaseDate comes from the API in YYYY-MM-DD format, or empty
+  console.log(releaseDate);
   const dateElement = document.createElement('p');
   dateElement.classList.add('date');
-  dateElement.innerText = formatter.format(date);
+  if (releaseDate.length > 0) {
+    const options = {year: 'numeric', month: 'long', day: 'numeric'};
+    const date = new Date(releaseDate + 'T14:48:00.000+09:00');
+    const formatter = new Intl.DateTimeFormat('default', options);
+    dateElement.innerText = formatter.format(date);
+  }
+  else {
+    dateElement.innerText = 'Date not available';
+  }
   return dateElement;
 }
 
