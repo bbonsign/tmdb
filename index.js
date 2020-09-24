@@ -29,7 +29,6 @@ async function handleSearch() {
     const resultsArr = await responseJson.results;
     console.log(await resultsArr);
     resultsList(resultsArr);
-    localStorage.clear();
     localStorage.setItem('searchTerm', searchTerm)
   }
 }
