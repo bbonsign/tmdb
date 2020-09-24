@@ -23,10 +23,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/search', async (req, res) => {
-  const query = url.parse(req.url, parseQueryString = true).query["query"];
-  console.log(query);
-  const tmdbURL = `${BASE_TMDB_URL}search/movie?${API_QUERY_PARAM}&query=${query}`;
-  // console.log(tmdbURL);
+  const getParams = url.parse(req.url, parseQueryString = true).query;
+  const {query, language} = getParams;
+  // console.log(query);
+  const tmdbURL = encodeURI(`${BASE_TMDB_URL}search/movie?${API_QUERY_PARAM}&query=${query}&language=${language}`);
+  console.log(tmdbURL);
   const data = await fetch(tmdbURL);
   const resultsJson = await data.json();
   // console.log(resultsJson);
