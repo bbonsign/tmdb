@@ -5,33 +5,54 @@ const resultsContainer = document.querySelector("#results-container");
 searchForm.addEventListener("submit", async e => {
   e.preventDefault();
   const searchTerm = searchInput.value.trim();
+  console.log(searchTerm);
+  if (searchTerm.length === 0) {return }
   const response = await fetch(`/search?query=${searchTerm}&language=${navigator.language}`);
   const responseJson = await response.json();
-  console.log(responseJson);
-  const resultsArr = await responseJson.results;
-  console.log(await resultsArr);
-  ResultsList(await resultsArr);
+  if (responseJson.total_results === 0) {
+    noResultMessage(sanitized(searchTerm));
+  }
+  else {
+    console.log(responseJson);
+    const resultsArr = await responseJson.results;
+    console.log(await resultsArr);
+    resultsList(await resultsArr);
+  }
 });
 
+function sanitized(str) {
+  const temp = document.createElement('div');
+  temp.textContent = str;
+  return temp.innerHTML;
+}
 
-function ResultsList(resultsArr) {
+function noResultMessage(searchTerm) {
+  clearElement(resultsContainer);
+  const messageElement = document.createElement('p');
+  messageElement.classList.add('no-result-message');
+  messageElement.innerHTML = `Sorry, no movies matched: <b>${searchTerm}</b>`;
+  resultsContainer.appendChild(messageElement);
+}
+
+function resultsList(resultsArr) {
   clearElement(resultsContainer);
   for (let movie of resultsArr) {
-    const card = Resultcard(movie);
+    const card = resultCard(movie);
     resultsContainer.appendChild(card);
   }
 };
 
-function Resultcard(moveObj) {
-  const {title,
+function resultCard(moveObj) {
+  const {
+    id,
+    title,
     overview,
     release_date: releaseDate,
     poster_path: posterPath} = moveObj;
 
-  const titleElement = cardTitle(title);
+  const titleElement = linkWrapper(id, title, cardTitle(title));
   const dateElement = cardDate(releaseDate);
-  const imageElement = posterPath ? cardImage(posterPath) : missingImage();
-  imageElement.alt = `Poster for the movie ${title}`
+  const imageElement = linkWrapper(id, title, posterPath ? cardImage(posterPath, title) : missingImage());
   const overviewElement = cardOverview(overview);
 
   const card = document.createElement('li')
@@ -72,15 +93,24 @@ function cardOverview(overview) {
   return overviewElement;
 }
 
-function cardImage(imagePath) {
-  const image = document.createElement("img")
+function linkWrapper(movieId, movieTitle, element) {
+  const anchor = document.createElement('a')
+  anchor.href = `https://www.themoviedb.org/movie/${movieId}`;
+  anchor.setAttribute('alt', `TMDB page for ${movieTitle}`);
+  anchor.appendChild(element);
+  return anchor;
+}
+
+function cardImage(imagePath, movieTitle) {
+  const image = document.createElement("img");
   image.classList.add('poster');
+  image.setAttribute('alt', `Poster for the movie ${movieTitle}`);
   image.src = `https://image.tmdb.org/t/p/w94_and_h141_bestv2/${imagePath}`;
   return image;
 }
 
 function missingImage() {
-  const image = document.createElement("img")
+  const image = document.createElement("img");
   image.classList.add('poster', 'missing-poster');
   image.alt = "No poster provided for this movie";
   image.src = 'public/image_not_supported-black-36dp.svg';

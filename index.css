@@ -1,3 +1,7 @@
+:root {
+  --border-radius: 2px;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -13,11 +17,16 @@ body {
 
 header {
   background-color: navy;
+  border-radius: var(--border-radius);
   color: whitesmoke;
   font-size: 1.3rem;
   margin-bottom: 10px;
   padding: 5px;
   text-align: center;
+}
+
+a {
+  text-decoration: none;
 }
 
 #search-form {
@@ -30,6 +39,7 @@ header {
 
 #search {
   border: none;
+  border-radius: var(--border-radius);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   font-size: 1.5rem;
   padding: 10px 5px;
@@ -39,6 +49,7 @@ header {
 #search-form button {
   background-color: skyblue;
   border: none;
+  border-radius: var(--border-radius);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   font-size: 1.5rem;
@@ -48,12 +59,18 @@ header {
 }
 
 #search-form button:hover{
-  background-color: cadetblue;
+  background-color: #66b0d5;
+}
+
+.no-result-message {
+  font-size: 1.3rem;
+  margin: 15px;
+  text-align: center;
 }
 
 .movie-card {
   border: 1px solid lightgray;
-  border-radius: 2px;
+  border-radius: var(--border-radius);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-flow: row nowrap;
@@ -68,7 +85,7 @@ header {
 }
 
 .poster {
-  border-radius: 2px;
+  border-radius: var(--border-radius);
   height: 141px;
   width: 94px;
 }
