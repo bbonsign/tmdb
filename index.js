@@ -4,28 +4,26 @@ const datalist = document.querySelector("#predictions");
 const resultsContainer = document.querySelector("#results-container");
 const pageNavContainer = document.querySelector("#page-nav");
 
-const state = {};
-
-function stateInit() {
-  const queryParams = new URLSearchParams(window.location.search);
-  const searchTerm = queryParams.get('query') || '';
-  const page = Number(queryParams.get('page')) || 1;
-  state.searchTerm = searchTerm;
-  state.page = Number(page);
-}
+const queryParams = new URLSearchParams(window.location.search);
+const searchTermFromURL = queryParams.get('query') || '';
+const pageFromURL = Number(queryParams.get('page')) || 1;
 
 window.onload = () => {
-  stateInit();
-  handleSearch(state.searchTerm, page = state.page);
-  searchInput.value = state.searchTerm;
+  handleSearch(searchTermFromURL, page = pageFromURL);
+  searchInput.value = searchTermFromURL;
 };
+
+async function queryApi(searchTerm, page = 1) {
+  const searchURL = `/json?query=${searchTerm}&language=${navigator.language}&page=${page}`;
+  const response = await fetch(searchURL);
+  return await response.json();
+}
 
 searchInput.addEventListener('input', async () => {
   clearElement(datalist);
-  if (searchInput.value.length > 1) {
-    const searchURL = `/json?query=${searchInput.value}&language=${navigator.language}&page=${page}`
-    const response = await fetch(searchURL);
-    const responseJson = await response.json();
+  const searchTerm = searchInput.value;
+  if (searchTerm.length > 1) {
+    const responseJson = await queryApi(searchTerm);
     console.log(responseJson);
     for (let result of responseJson.results) {
       const option = document.createElement('option');
@@ -38,16 +36,16 @@ searchInput.addEventListener('input', async () => {
 searchForm.addEventListener("submit", e => {
   e.preventDefault();
   const newSearch = searchInput.value.trim();
-  window.location = `/?query=${newSearch}&language=${navigator.language}&page=1`
+  if (newSearch.length > 0) {
+    window.location = `/?query=${newSearch}&language=${navigator.language}&page=1`
+  }
 });
 
 async function handleSearch(searchTerm, page = 1) {
   if (searchTerm.length === 0) {
     return;
   }
-  const searchURL = `/json?query=${searchTerm}&language=${navigator.language}&page=${page}`
-  const response = await fetch(searchURL);
-  const responseJson = await response.json();
+  const responseJson = await queryApi(searchTerm, page);
   if (responseJson.total_results === 0) {
     noResultMessage(sanitized(searchTerm));
   }
@@ -165,9 +163,10 @@ function clearElement(element) {
   element.innerHTML = '';
 }
 
+// Create the links for the bottom of the site to naviagate to
+// other pages of the search results.
 function pageNav(responseJson, searchTerm) {
-  clearElement(pageNavContainer);
-  const currentPage = state.page;
+  const currentPage = pageFromURL;
   const lastPage = responseJson.total_pages;
   const validNumbers = [1, 2, currentPage - 1, currentPage, currentPage + 1, lastPage - 1, lastPage];
 
