@@ -35,14 +35,14 @@ e.g. `export PORT=3000`.
 
 Language aware:
 
-<img width="175" alt="English view" src="./public/en-EN.png">
-<img width="175" alt="Chinese view" src="./public/zh-CN.png">
-<img width="175" alt="Italian view" src="./public/it-IT.png">
+<img width="175" alt="English view" src="./images/en-EN.png">
+<img width="175" alt="Chinese view" src="./images/zh-CN.png">
+<img width="175" alt="Italian view" src="./images/it-IT.png">
 
 Completion menu and mobile layout:
 
-<img width="175" alt="suggestion menu" src="./public/seach_suggestions.png">
-<img width="175" alt="mobile view" src="./public/mobile.png">
+<img width="175" alt="suggestion menu" src="./images/seach_suggestions.png">
+<img width="175" alt="mobile view" src="./images/mobile.png">
 
 
 # Discussion
