@@ -1,35 +1,60 @@
 const searchInput = document.querySelector("#search");
 const searchForm = document.querySelector("#search-form");
+const datalist = document.querySelector("#predictions");
 const resultsContainer = document.querySelector("#results-container");
+const pageNavContainer = document.querySelector("#page-nav");
+
+const state = {};
+
+function stateInit() {
+  const queryParams = new URLSearchParams(window.location.search);
+  const searchTerm = queryParams.get('query') || '';
+  const page = Number(queryParams.get('page')) || 1;
+  state.searchTerm = searchTerm;
+  state.page = Number(page);
+}
 
 window.onload = () => {
-  handleSearch();
+  stateInit();
+  handleSearch(state.searchTerm, page = state.page);
+  searchInput.value = state.searchTerm;
 };
+
+searchInput.addEventListener('input', async () => {
+  clearElement(datalist);
+  if (searchInput.value.length > 1) {
+    const searchURL = `/json?query=${searchInput.value}&language=${navigator.language}&page=${page}`
+    const response = await fetch(searchURL);
+    const responseJson = await response.json();
+    console.log(responseJson);
+    for (let result of responseJson.results) {
+      const option = document.createElement('option');
+      option.value = result.title;
+      datalist.appendChild(option);
+    }
+  }
+});
 
 searchForm.addEventListener("submit", e => {
   e.preventDefault();
-  handleSearch()
+  const newSearch = searchInput.value.trim();
+  window.location = `/?query=${newSearch}&language=${navigator.language}&page=1`
 });
 
-async function handleSearch() {
-  const searchTerm = searchInput.value.trim();
-  console.log(searchTerm);
+async function handleSearch(searchTerm, page = 1) {
   if (searchTerm.length === 0) {
-    return
+    return;
   }
-
-  const searchURL = `/search?query=${searchTerm}&language=${navigator.language}`
+  const searchURL = `/json?query=${searchTerm}&language=${navigator.language}&page=${page}`
   const response = await fetch(searchURL);
   const responseJson = await response.json();
   if (responseJson.total_results === 0) {
     noResultMessage(sanitized(searchTerm));
   }
   else {
-    console.log(responseJson);
-    const resultsArr = await responseJson.results;
-    console.log(await resultsArr);
+    const resultsArr = responseJson.results;
     resultsList(resultsArr);
-    localStorage.setItem('searchTerm', searchTerm)
+    pageNav(responseJson, searchTerm);
   }
 }
 
@@ -61,7 +86,8 @@ function resultCard(moveObj) {
     title,
     overview,
     release_date: releaseDate = '',
-    poster_path: posterPath} = moveObj;
+    poster_path: posterPath
+  } = moveObj;
 
   const titleElement = linkWrapper(id, title, cardTitle(title));
   const dateElement = cardDate(releaseDate);
@@ -90,7 +116,6 @@ function cardTitle(title) {
 
 function cardDate(releaseDate) {
   //releaseDate comes from the API in YYYY-MM-DD format, or empty
-  console.log(releaseDate);
   const dateElement = document.createElement('p');
   dateElement.classList.add('date');
   if (releaseDate.length > 0) {
@@ -131,7 +156,7 @@ function cardImage(imagePath, movieTitle) {
 function missingImage() {
   const image = document.createElement("img");
   image.classList.add('poster', 'missing-poster');
-  image.alt = "No poster provided for this movie";
+  image.setAttribute('alt', "No poster provided for this movie");
   image.src = 'public/image_not_supported-black-36dp.svg';
   return image;
 }
@@ -139,3 +164,38 @@ function missingImage() {
 function clearElement(element) {
   element.innerHTML = '';
 }
+
+function pageNav(responseJson, searchTerm) {
+  clearElement(pageNavContainer);
+  const currentPage = state.page;
+  const lastPage = responseJson.total_pages;
+  const validNumbers = [1, 2, currentPage - 1, currentPage, currentPage + 1, lastPage - 1, lastPage];
+
+  if (currentPage !== 1) {
+    const prev = document.createElement('a');
+    prev.classList.add('page-link');
+    prev.href = `/?query=${searchTerm}&language=${navigator.language}&page=${currentPage - 1}`;
+    prev.setAttribute('alt', 'Previous page of search results');
+    prev.innerText = '<<';
+    pageNavContainer.appendChild(prev);
+  }
+  for (let i = 1; i <= responseJson.total_pages; i++) {
+    if (validNumbers.includes(i)) {
+      const link = document.createElement('a');
+      link.classList.add('page-link');
+      link.setAttribute('data-active-page', i === currentPage ? 'true' : '');
+      link.href = `/?query=${searchTerm}&language=${navigator.language}&page=${i}`;
+      link.setAttribute('alt', `Page ${i} of search results`);
+      link.innerText = i;
+      pageNavContainer.appendChild(link);
+    }
+  }
+  if (currentPage !== lastPage) {
+    const prev = document.createElement('a');
+    prev.classList.add('page-link');
+    prev.href = `/?query=${searchTerm}&language=${navigator.language}&page=${currentPage + 1}`;
+    prev.setAttribute('alt', 'Next page of search results');
+    prev.innerText = '>>';
+    pageNavContainer.appendChild(prev);
+  }
+};

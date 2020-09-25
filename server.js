@@ -18,18 +18,19 @@ app.listen(PORT, () => {
 
 
 app.get('/', (req, res) => {
-  console.log(`--> Request from: ${req.url}`);
   res.sendFile(path.join(__dirname + '/index.html'));
 });
 
-app.get('/search', async (req, res) => {
+
+app.get('/json', async (req, res) => {
   const getParams = url.parse(req.url, parseQueryString = true).query;
-  const {query, language} = getParams;
-  // console.log(query);
-  const tmdbURL = encodeURI(`${BASE_TMDB_URL}search/movie?${API_QUERY_PARAM}&query=${query}&language=${language}`);
-  console.log(tmdbURL);
+  const {
+    query,
+    language,
+    page = 1
+  } = getParams;
+  const tmdbURL = encodeURI(`${BASE_TMDB_URL}search/movie?${API_QUERY_PARAM}&query=${query}&language=${language}&page=${page}`);
   const data = await fetch(tmdbURL);
   const resultsJson = await data.json();
-  // console.log(resultsJson);
   res.json(resultsJson);
 });

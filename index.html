@@ -16,17 +16,21 @@
 
 <body>
 
-  <header>
-    <h1 class="page-header">Search for a movie on TMDB</h1>
-  </header>
+  <a href="/" alt="home page, or clear current search results">
+    <header>
+      <h1 class="page-header">Search for a movie on TMDB</h1>
+    </header>
+  </a>
 
   <form id="search-form" method="GET" action="">
-    <input id="search" type="search">
+    <label for="search">Search by movie title:</label>
+    <input id="search" list="predictions" type="search" placeholder="Search by title..." autocomplete="off">
+    <datalist id="predictions"></datalist>
     <button type="submit">Search</button>
   </form>
 
   <ul id="results-container"></ul>
-
+  <div id="page-nav"></div>
 </body>
 
 </html>
