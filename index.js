@@ -24,7 +24,6 @@ searchInput.addEventListener('input', async () => {
   const searchTerm = searchInput.value.trim();
   if (searchTerm.length > 1) {
     const responseJson = await queryApi(searchTerm);
-    console.log(responseJson);
     for (let result of responseJson.results) {
       const option = document.createElement('option');
       option.value = result.title;
