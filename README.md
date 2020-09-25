@@ -20,7 +20,8 @@ Run `npm install` to install the dependencies and then `npm run devstart` to run
 The devstart command uses nodemon to watch for file changes and automatically restart the server.
 
 
-By default the server will listen on port 8000, but you you can change this to another port by setting a `PORT` environment variable.
+By default the server will listen on port 8000, but you you can change this to another port by setting a `PORT` environment variable,
+e.g. `export PORT=3000`.
 
 
 # Features
@@ -33,14 +34,14 @@ By default the server will listen on port 8000, but you you can change this to a
 
 Language aware:
 
-![English view](./public/en-EN.png =200x )
-![Chinese view](./public/zh-CN.png =200x )
-![Italian view](./public/it-IT.png =200x )
+<img width="175" alt="English view" src="./public/en-EN.png">
+<img width="175" alt="Chinese view" src="./public/zh-CN.png">
+<img width="175" alt="Italian view" src="./public/it-IT.png">
 
 Completion menu and mobile layout:
 
-![suggestion menu](./public/seach_suggestions.png =200x )
-![mobile view](./public/mobile.png =200x )
+<img width="175" alt="suggestion menu" src="./public/seach_suggestions.png">
+<img width="175" alt="mobile view" src="./public/mobile.png">
 
 
 # Discussion
