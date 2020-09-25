@@ -21,7 +21,7 @@ async function queryApi(searchTerm, page = 1) {
 
 searchInput.addEventListener('input', async () => {
   clearElement(datalist);
-  const searchTerm = searchInput.value;
+  const searchTerm = searchInput.value.trim();
   if (searchTerm.length > 1) {
     const responseJson = await queryApi(searchTerm);
     console.log(responseJson);
@@ -155,7 +155,7 @@ function missingImage() {
   const image = document.createElement("img");
   image.classList.add('poster', 'missing-poster');
   image.setAttribute('alt', "No poster provided for this movie");
-  image.src = 'public/image_not_supported-black-36dp.svg';
+  image.src = 'images/image_not_supported-black-36dp.svg';
   return image;
 }
 
